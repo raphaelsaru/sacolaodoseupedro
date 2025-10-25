@@ -2,7 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { DollarSign, Package, ShoppingCart, TrendingUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { DollarSign, Package, ShoppingCart, TrendingUp, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -23,6 +25,7 @@ export default async function DashboardPage() {
     .select('total', { count: 'exact' })
     .gte('placed_at', today.toISOString())
     .lt('placed_at', tomorrow.toISOString())
+    .neq('status', 'canceled')
 
   const todayTotal = todayOrders?.reduce((sum, order) => sum + Number(order.total), 0) || 0
 
@@ -31,6 +34,7 @@ export default async function DashboardPage() {
     .from('orders')
     .select('total')
     .gte('placed_at', weekAgo.toISOString())
+    .neq('status', 'canceled')
 
   const weekTotal = weekOrders?.reduce((sum, order) => sum + Number(order.total), 0) || 0
 
@@ -184,6 +188,7 @@ export default async function DashboardPage() {
                     <TableHead>Cliente</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Total</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -206,6 +211,13 @@ export default async function DashboardPage() {
                       </TableCell>
                       <TableCell className="text-right font-medium">
                         R$ {Number(order.total).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Link href={`/app/pedidos/${order.id}`}>
+                          <Button variant="ghost" size="sm">
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}

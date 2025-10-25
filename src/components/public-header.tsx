@@ -10,7 +10,7 @@ export function PublicHeader() {
   const { cart } = useCart()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between max-w-7xl">
         <Link href="/" className="flex items-center space-x-2">
           <span className="text-xl font-bold text-green-600">
@@ -19,8 +19,8 @@ export function PublicHeader() {
         </Link>
 
         <nav className="flex items-center space-x-4">
-          <Link href="/cardapio">
-            <Button variant="ghost">Cardápio</Button>
+          <Link href="/">
+            <Button variant="ghost">Produtos</Button>
           </Link>
           <Link href="/cestas">
             <Button variant="ghost">Cestas</Button>

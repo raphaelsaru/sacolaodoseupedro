@@ -67,7 +67,7 @@ export default function CarrinhoPage() {
       cart.items.forEach((item, index) => {
         message += `${index + 1}. *${item.name}*\n`
         if (item.type === 'product') {
-          message += `   Quantidade: ${item.quantity} ${item.unit}\n`
+          message += `   Quantidade: ${item.quantity.toFixed(2)} ${item.unit}\n`
         } else {
           message += `   Quantidade: ${item.quantity}x\n`
         }
@@ -109,8 +109,8 @@ export default function CarrinhoPage() {
         <p className="text-muted-foreground mb-6">
           Adicione produtos ao carrinho para continuar
         </p>
-        <Link href="/cardapio">
-          <Button size="lg">Ver Cardápio</Button>
+        <Link href="/">
+          <Button size="lg">Ver Produtos</Button>
         </Link>
       </div>
     )
@@ -169,7 +169,7 @@ export default function CarrinhoPage() {
                         <Minus className="h-3 w-3" />
                       </Button>
                       <span className="min-w-[60px] text-center font-medium">
-                        {item.quantity}
+                        {item.type === 'product' && item.unit ? item.quantity.toFixed(2) : item.quantity}
                         {item.type === 'product' && item.unit ? ` ${item.unit}` : 'x'}
                       </span>
                       <Button
@@ -245,8 +245,8 @@ export default function CarrinhoPage() {
                   <SelectContent>
                     <SelectItem value="Pix">Pix</SelectItem>
                     <SelectItem value="Dinheiro">Dinheiro</SelectItem>
-                    <SelectItem value="Cartão na entrega">
-                      Cartão na entrega
+                    <SelectItem value="Cartão">
+                      Cartão
                     </SelectItem>
                     <SelectItem value="Outro">Outro</SelectItem>
                   </SelectContent>

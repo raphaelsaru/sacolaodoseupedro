@@ -108,7 +108,7 @@ export function ProductCard({
             </Button>
             <div className="flex-1 text-center">
               <span className="text-lg font-semibold">
-                {quantity} {unit}
+                {quantity.toFixed(2)} {unit}
               </span>
             </div>
             <Button

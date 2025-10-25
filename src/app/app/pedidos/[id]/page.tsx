@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ArrowLeft } from 'lucide-react'
 import { OrderStatusSelect } from '@/components/order-status-select'
+import { PaymentStatusSelect } from '@/components/payment-status-select'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -49,7 +50,7 @@ export default async function PedidoDetalhePage({ params }: PageProps) {
   const paymentLabels: Record<string, string> = {
     pix: 'Pix',
     cash: 'Dinheiro',
-    card_on_delivery: 'Cartão na entrega',
+    card_on_delivery: 'Cartão',
     other: 'Outro',
   }
 
@@ -101,7 +102,7 @@ export default async function PedidoDetalhePage({ params }: PageProps) {
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell className="text-right">
-                        {Number(item.qty).toFixed(1)} {item.unit?.name}
+                        {Number(item.qty).toFixed(2)} {item.unit?.name}
                       </TableCell>
                       <TableCell className="text-right">
                         R$ {Number(item.unit_price).toFixed(2)}
@@ -207,10 +208,8 @@ export default async function PedidoDetalhePage({ params }: PageProps) {
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium">Status</p>
-                <Badge variant={order.paid ? 'secondary' : 'destructive'}>
-                  {order.paid ? 'Pago' : 'Pendente'}
-                </Badge>
+                <p className="text-sm font-medium mb-2">Status</p>
+                <PaymentStatusSelect orderId={order.id} currentPaid={order.paid} />
               </div>
             </CardContent>
           </Card>
