@@ -1,39 +1,85 @@
-import { notFound } from 'next/navigation'
+'use client'
+
+import { notFound, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, MessageCircle } from 'lucide-react'
 import { OrderStatusSelect } from '@/components/order-status-select'
 import { PaymentStatusSelect } from '@/components/payment-status-select'
+import { toast } from 'sonner'
 
 interface PageProps {
   params: Promise<{ id: string }>
 }
 
-export default async function PedidoDetalhePage({ params }: PageProps) {
-  const { id } = await params
-  const supabase = await createClient()
+export default function PedidoDetalhePage({ params }: PageProps) {
+  const [order, setOrder] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
-  const { data: order } = await supabase
-    .from('orders')
-    .select(`
-      *,
-      customer:customers(full_name, phone, email),
-      address:addresses(street, number, complement, neighborhood, city, state, zip),
-      order_items(
-        id,
-        name,
-        qty,
-        unit_price,
-        total,
-        unit:units(name)
-      )
-    `)
-    .eq('id', id)
-    .single()
+  useEffect(() => {
+    const fetchOrder = async () => {
+      const { id } = await params
+      const supabase = createClient()
+
+      const { data } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          customer:customers(full_name, phone, email),
+          address:addresses(street, number, complement, neighborhood, city, state, zip),
+          order_items(
+            id,
+            name,
+            qty,
+            unit_price,
+            total,
+            unit:units(name)
+          )
+        `)
+        .eq('id', id)
+        .single()
+
+      if (data) {
+        setOrder(data)
+      }
+      setLoading(false)
+    }
+
+    fetchOrder()
+  }, [params])
+
+  const handleNotifyCustomer = () => {
+    if (!order.customer) {
+      toast.error('Cliente sem informações de contato')
+      return
+    }
+
+    const customerName = order.customer.full_name || 'Cliente'
+    const message = `Ola ${customerName}, seu pedido ja foi separado e esta pronto para a retirada!`
+    
+    // Get phone number without formatting
+    const phone = order.customer.phone?.replace(/\D/g, '') || ''
+    
+    if (!phone) {
+      toast.error('Cliente sem telefone cadastrado')
+      return
+    }
+
+    const encodedMessage = encodeURIComponent(message)
+    const whatsappUrl = `https://wa.me/55${phone}?text=${encodedMessage}`
+    
+    window.open(whatsappUrl, '_blank')
+    toast.success('Abrindo WhatsApp...')
+  }
+
+  if (loading) {
+    return <div className="text-center py-12">Carregando...</div>
+  }
 
   if (!order) {
     notFound()
@@ -42,7 +88,6 @@ export default async function PedidoDetalhePage({ params }: PageProps) {
   const statusLabels: Record<string, string> = {
     new: 'Novo',
     picking: 'Separando',
-    out_for_delivery: 'Saiu para entrega',
     delivered: 'Entregue',
     canceled: 'Cancelado',
   }
@@ -161,6 +206,16 @@ export default async function PedidoDetalhePage({ params }: PageProps) {
                 <span className="text-sm text-muted-foreground">Canal:</span>
                 <Badge variant="outline">{channelLabels[order.channel]}</Badge>
               </div>
+              {order.status === 'picking' && order.customer?.phone && (
+                <Button 
+                  onClick={handleNotifyCustomer} 
+                  className="w-full"
+                  variant="default"
+                >
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Avisar Cliente (Pronto)
+                </Button>
+              )}
             </CardContent>
           </Card>
 

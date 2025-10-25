@@ -56,13 +56,13 @@ export default function CarrinhoPage() {
         return
       }
 
-      // Build WhatsApp message
-      let message = `🛒 *NOVO PEDIDO - Sacolão do Seu Pedro*\n\n`
-      message += `🆔 *Pedido #${checkoutResult.order.id.slice(0, 8)}*\n`
-      message += `👤 *Cliente:* ${customerName}\n`
-      message += `📱 *Telefone:* ${customerPhone}\n`
-      message += `💳 *Pagamento:* ${paymentMethod}\n\n`
-      message += `📦 *ITENS DO PEDIDO:*\n\n`
+      // Build WhatsApp message (using text instead of emojis to avoid encoding issues)
+      let message = `*NOVO PEDIDO - Sacolao do Seu Pedro*\n\n`
+      message += `*Pedido #${checkoutResult.order.id.slice(0, 8)}*\n`
+      message += `*Cliente:* ${customerName}\n`
+      message += `*Telefone:* ${customerPhone}\n`
+      message += `*Pagamento:* ${paymentMethod}\n\n`
+      message += `*ITENS DO PEDIDO:*\n\n`
 
       cart.items.forEach((item, index) => {
         message += `${index + 1}. *${item.name}*\n`
@@ -74,10 +74,10 @@ export default function CarrinhoPage() {
         message += `   Valor: R$ ${(item.price * item.quantity).toFixed(2)}\n\n`
       })
 
-      message += `💰 *TOTAL: R$ ${cart.total.toFixed(2)}*\n\n`
+      message += `*TOTAL: R$ ${cart.total.toFixed(2)}*\n\n`
 
       if (notes.trim()) {
-        message += `📝 *Observações:*\n${notes}\n\n`
+        message += `*Observacoes:*\n${notes}\n\n`
       }
 
       message += `_Pedido enviado via site e salvo no sistema_`

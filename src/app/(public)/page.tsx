@@ -1,42 +1,92 @@
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { ProductCard } from '@/components/product-card'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search } from 'lucide-react'
 
-interface PageProps {
-  searchParams: Promise<{ search?: string; category?: string }>
-}
+export default function HomePage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [categories, setCategories] = useState<any[]>([])
+  const [products, setProducts] = useState<any[]>([])
+  const [search, setSearch] = useState(searchParams.get('search') || '')
+  const [category, setCategory] = useState(searchParams.get('category') || 'all')
+  const [loading, setLoading] = useState(true)
 
-export default async function HomePage({ searchParams }: PageProps) {
-  const supabase = await createClient()
-  const params = await searchParams
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('categories')
+        .select('*')
+        .order('position')
+      
+      if (data) setCategories(data)
+    }
+    
+    fetchCategories()
+  }, [])
 
-  // Fetch categories for filter
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .order('position')
+  // Fetch products when filters change
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true)
+      const supabase = createClient()
+      
+      let query = supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories(name),
+          unit:units(name, step)
+        `)
+        .eq('is_active', true)
 
-  // Fetch products with filters
-  let query = supabase
-    .from('products')
-    .select(`
-      *,
-      category:categories(name),
-      unit:units(name, step)
-    `)
-    .eq('is_active', true)
+      if (search) {
+        query = query.ilike('name', `%${search}%`)
+      }
 
-  if (params.search) {
-    query = query.ilike('name', `%${params.search}%`)
+      if (category && category !== 'all') {
+        query = query.eq('category_id', category)
+      }
+
+      const { data } = await query.order('name')
+      
+      if (data) setProducts(data)
+      setLoading(false)
+    }
+
+    fetchProducts()
+  }, [search, category])
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value)
+    // Update URL without reload
+    const params = new URLSearchParams(searchParams.toString())
+    if (value) {
+      params.set('search', value)
+    } else {
+      params.delete('search')
+    }
+    router.push(`?${params.toString()}`, { scroll: false })
   }
 
-  if (params.category) {
-    query = query.eq('category_id', params.category)
+  const handleCategoryChange = (value: string) => {
+    setCategory(value)
+    // Update URL without reload
+    const params = new URLSearchParams(searchParams.toString())
+    if (value && value !== 'all') {
+      params.set('category', value)
+    } else {
+      params.delete('category')
+    }
+    router.push(`?${params.toString()}`, { scroll: false })
   }
-
-  const { data: products } = await query.order('name')
 
   return (
     <div className="space-y-6">
@@ -54,19 +104,19 @@ export default async function HomePage({ searchParams }: PageProps) {
           <Input
             placeholder="Buscar produtos..."
             className="pl-10"
-            name="search"
-            defaultValue={params.search}
+            value={search}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
-        <Select name="category" defaultValue={params.category}>
+        <Select value={category} onValueChange={handleCategoryChange}>
           <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Todas as categorias" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas as categorias</SelectItem>
-            {categories?.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
+            {categories?.map((cat) => (
+              <SelectItem key={cat.id} value={cat.id}>
+                {cat.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -74,8 +124,12 @@ export default async function HomePage({ searchParams }: PageProps) {
       </div>
 
       {/* Products Grid */}
-      {products && products.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground text-lg">Carregando produtos...</p>
+        </div>
+      ) : products && products.length > 0 ? (
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {products.map((product) => (
             <ProductCard
               key={product.id}

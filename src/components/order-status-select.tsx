@@ -14,7 +14,6 @@ interface OrderStatusSelectProps {
 const statusOptions = [
   { value: 'new', label: 'Novo' },
   { value: 'picking', label: 'Separando' },
-  { value: 'out_for_delivery', label: 'Saiu para entrega' },
   { value: 'delivered', label: 'Entregue' },
   { value: 'canceled', label: 'Cancelado' },
 ]
