@@ -11,7 +11,7 @@ export interface CartItem {
   type: 'product' | 'basket'
   unit?: string
   unitStep?: number
-  image_url?: string
+  image_url?: string | null
 }
 
 export interface CheckoutData {
