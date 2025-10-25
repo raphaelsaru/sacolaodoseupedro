@@ -50,7 +50,9 @@ export default async function ProdutosPage() {
                   <TableHead>Nome</TableHead>
                   <TableHead>Categoria</TableHead>
                   <TableHead>Unidade</TableHead>
+                  <TableHead className="text-right">Custo</TableHead>
                   <TableHead className="text-right">Preço</TableHead>
+                  <TableHead className="text-right">Estoque</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -77,8 +79,18 @@ export default async function ProdutosPage() {
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell>{product.category?.name || '-'}</TableCell>
                     <TableCell>{product.unit?.name || '-'}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      R$ {Number(product.cost || 0).toFixed(2)}
+                    </TableCell>
                     <TableCell className="text-right">
                       R$ {Number(product.price).toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge 
+                        variant={Number(product.quantity || 0) <= 0 ? 'destructive' : 'secondary'}
+                      >
+                        {Number(product.quantity || 0).toFixed(2)} {product.unit?.name || 'un'}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant={product.is_active ? 'secondary' : 'outline'}>

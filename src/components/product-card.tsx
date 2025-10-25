@@ -16,6 +16,7 @@ interface ProductCardProps {
   unitStep: number
   image_url?: string | null
   category?: string
+  quantity?: number
 }
 
 export function ProductCard({
@@ -26,11 +27,24 @@ export function ProductCard({
   unitStep,
   image_url,
   category,
+  quantity: stock = 0,
 }: ProductCardProps) {
   const { addItem, getItemQuantity, updateQuantity } = useCart()
-  const quantity = getItemQuantity(id)
+  const cartQuantity = getItemQuantity(id)
+  const isOutOfStock = stock <= 0
 
   const handleAdd = () => {
+    if (isOutOfStock) {
+      toast.error('Produto fora de estoque!')
+      return
+    }
+    
+    // Verificar se tem estoque suficiente
+    if (unitStep > stock) {
+      toast.error('Não é possível adicionar mais deste item ao carrinho pois não consta essa quantidade no estoque.')
+      return
+    }
+    
     addItem(
       {
         id,
@@ -47,20 +61,40 @@ export function ProductCard({
   }
 
   const handleIncrement = () => {
-    updateQuantity(id, quantity + unitStep)
+    if (isOutOfStock) {
+      toast.error('Produto fora de estoque!')
+      return
+    }
+    
+    const newQuantity = cartQuantity + unitStep
+    
+    // Verificar se a nova quantidade excede o estoque
+    if (newQuantity > stock) {
+      // Ajustar para o máximo disponível em estoque
+      const maxAvailable = Math.floor(stock / unitStep) * unitStep
+      if (maxAvailable > cartQuantity) {
+        updateQuantity(id, maxAvailable)
+        toast.warning('Não é possível adicionar mais deste item ao carrinho pois não consta essa quantidade no estoque.')
+      } else {
+        toast.error('Não é possível adicionar mais deste item ao carrinho pois não consta essa quantidade no estoque.')
+      }
+      return
+    }
+    
+    updateQuantity(id, newQuantity)
   }
 
   const handleDecrement = () => {
-    if (quantity - unitStep <= 0) {
+    if (cartQuantity - unitStep <= 0) {
       updateQuantity(id, 0)
       toast.info(`${name} removido do carrinho`)
     } else {
-      updateQuantity(id, quantity - unitStep)
+      updateQuantity(id, cartQuantity - unitStep)
     }
   }
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className={`overflow-hidden hover:shadow-lg transition-shadow ${isOutOfStock ? 'opacity-50' : ''}`}>
       <div className="relative aspect-square w-full overflow-hidden bg-muted">
         {image_url ? (
           <Image
@@ -88,13 +122,23 @@ export function ProductCard({
           </span>
           <span className="text-sm text-muted-foreground">/ {unit}</span>
         </div>
+        {isOutOfStock && (
+          <Badge variant="destructive" className="mt-2">
+            Fora de estoque
+          </Badge>
+        )}
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        {quantity === 0 ? (
-          <Button onClick={handleAdd} className="w-full" size="lg">
+        {cartQuantity === 0 ? (
+          <Button 
+            onClick={handleAdd} 
+            className="w-full" 
+            size="lg"
+            disabled={isOutOfStock}
+          >
             <Plus className="mr-2 h-4 w-4" />
-            Adicionar
+            {isOutOfStock ? 'Indisponível' : 'Adicionar'}
           </Button>
         ) : (
           <div className="flex w-full items-center gap-2">
@@ -108,7 +152,7 @@ export function ProductCard({
             </Button>
             <div className="flex-1 text-center">
               <span className="text-lg font-semibold">
-                {quantity.toFixed(2)} {unit}
+                {cartQuantity.toFixed(2)} {unit}
               </span>
             </div>
             <Button
@@ -116,6 +160,7 @@ export function ProductCard({
               variant="outline"
               size="icon"
               className="h-10 w-10"
+              disabled={isOutOfStock}
             >
               <Plus className="h-4 w-4" />
             </Button>

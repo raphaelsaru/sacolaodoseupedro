@@ -140,6 +140,7 @@ export default function HomePage() {
               unitStep={product.unit?.step || 1}
               image_url={product.image_url}
               category={product.category?.name}
+              quantity={product.quantity || 0}
             />
           ))}
         </div>

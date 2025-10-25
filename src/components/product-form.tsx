@@ -128,7 +128,7 @@ export function ProductForm({ product, categories, units }: ProductFormProps) {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Preço *</Label>
+                  <Label htmlFor="price">Preço de Venda *</Label>
                   <Input
                     id="price"
                     name="price"
@@ -136,6 +136,36 @@ export function ProductForm({ product, categories, units }: ProductFormProps) {
                     step="0.01"
                     min="0"
                     defaultValue={product?.price}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cost">Custo *</Label>
+                  <Input
+                    id="cost"
+                    name="cost"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    defaultValue={product?.cost || 0}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="quantity">Quantidade em Estoque *</Label>
+                  <Input
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    defaultValue={product?.quantity || 0}
                     required
                     disabled={loading}
                   />

@@ -94,6 +94,8 @@ export interface Database {
           category_id: string | null
           unit_id: string | null
           price: number
+          cost: number
+          quantity: number
           sku: string | null
           image_url: string | null
           is_active: boolean
@@ -106,6 +108,8 @@ export interface Database {
           category_id?: string | null
           unit_id?: string | null
           price?: number
+          cost?: number
+          quantity?: number
           sku?: string | null
           image_url?: string | null
           is_active?: boolean
@@ -118,6 +122,8 @@ export interface Database {
           category_id?: string | null
           unit_id?: string | null
           price?: number
+          cost?: number
+          quantity?: number
           sku?: string | null
           image_url?: string | null
           is_active?: boolean

@@ -10,6 +10,8 @@ export async function createProduct(formData: FormData) {
   const category_id = formData.get('category_id') as string
   const unit_id = formData.get('unit_id') as string
   const price = parseFloat(formData.get('price') as string)
+  const cost = parseFloat(formData.get('cost') as string)
+  const quantity = parseFloat(formData.get('quantity') as string)
   const sku = formData.get('sku') as string
   const image = formData.get('image') as File | null
 
@@ -41,6 +43,8 @@ export async function createProduct(formData: FormData) {
     category_id: category_id || null,
     unit_id: unit_id || null,
     price,
+    cost,
+    quantity,
     sku: sku || null,
     image_url,
   })
@@ -60,6 +64,8 @@ export async function updateProduct(id: string, formData: FormData) {
   const category_id = formData.get('category_id') as string
   const unit_id = formData.get('unit_id') as string
   const price = parseFloat(formData.get('price') as string)
+  const cost = parseFloat(formData.get('cost') as string)
+  const quantity = parseFloat(formData.get('quantity') as string)
   const sku = formData.get('sku') as string
   const image = formData.get('image') as File | null
 
@@ -91,6 +97,8 @@ export async function updateProduct(id: string, formData: FormData) {
     category_id: category_id || null,
     unit_id: unit_id || null,
     price,
+    cost,
+    quantity,
     sku: sku || null,
   }
 
