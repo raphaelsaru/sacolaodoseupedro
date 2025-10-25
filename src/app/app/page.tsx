@@ -80,7 +80,7 @@ export default async function DashboardPage() {
         productMap.set(item.product_id, {
           name: item.name,
           qty: Number(item.qty),
-          image_url: item.product?.image_url,
+          image_url: Array.isArray(item.product) ? item.product[0]?.image_url : item.product?.image_url,
         })
       }
     }
