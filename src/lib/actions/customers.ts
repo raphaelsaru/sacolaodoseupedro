@@ -112,3 +112,55 @@ export async function deleteAddress(customerId: string, addressId: string) {
   return { success: true }
 }
 
+export async function findOrCreateCustomer(customerData: {
+  full_name: string
+  phone: string
+  email?: string
+}) {
+  const supabase = await createClient()
+
+  // First, try to find existing customer by phone
+  const { data: existingCustomer } = await supabase
+    .from('customers')
+    .select('*')
+    .eq('phone', customerData.phone)
+    .single()
+
+  if (existingCustomer) {
+    // Update customer info if needed
+    if (existingCustomer.full_name !== customerData.full_name || 
+        (customerData.email && existingCustomer.email !== customerData.email)) {
+      const { error: updateError } = await supabase
+        .from('customers')
+        .update({
+          full_name: customerData.full_name,
+          email: customerData.email || existingCustomer.email,
+        })
+        .eq('id', existingCustomer.id)
+
+      if (updateError) {
+        return { error: updateError.message }
+      }
+    }
+    return { success: true, customer: existingCustomer }
+  }
+
+  // Create new customer if not found
+  const { data: newCustomer, error: createError } = await supabase
+    .from('customers')
+    .insert({
+      full_name: customerData.full_name,
+      phone: customerData.phone,
+      email: customerData.email || null,
+    })
+    .select()
+    .single()
+
+  if (createError) {
+    return { error: createError.message }
+  }
+
+  revalidatePath('/app/clientes')
+  return { success: true, customer: newCustomer }
+}
+

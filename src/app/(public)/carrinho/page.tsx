@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCart } from '@/contexts/cart-context'
 import { toast } from 'sonner'
+import { processCheckout } from '@/lib/actions/checkout'
 
 export default function CarrinhoPage() {
   const { cart, updateQuantity, removeItem, clearCart } = useCart()
@@ -19,8 +20,9 @@ export default function CarrinhoPage() {
   const [customerPhone, setCustomerPhone] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
   const [notes, setNotes] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!customerName.trim()) {
       toast.error('Por favor, informe seu nome')
       return
@@ -36,42 +38,67 @@ export default function CarrinhoPage() {
       return
     }
 
-    // Build WhatsApp message
-    let message = `🛒 *NOVO PEDIDO - Sacolão do Seu Pedro*\n\n`
-    message += `👤 *Cliente:* ${customerName}\n`
-    message += `📱 *Telefone:* ${customerPhone}\n`
-    message += `💳 *Pagamento:* ${paymentMethod}\n\n`
-    message += `📦 *ITENS DO PEDIDO:*\n\n`
+    setIsProcessing(true)
 
-    cart.items.forEach((item, index) => {
-      message += `${index + 1}. *${item.name}*\n`
-      if (item.type === 'product') {
-        message += `   Quantidade: ${item.quantity} ${item.unit}\n`
-      } else {
-        message += `   Quantidade: ${item.quantity}x\n`
+    try {
+      // Process checkout and save to database
+      const checkoutResult = await processCheckout({
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+        paymentMethod,
+        notes: notes.trim(),
+        cartItems: cart.items,
+        cartTotal: cart.total,
+      })
+
+      if (!checkoutResult.success) {
+        toast.error(checkoutResult.error || 'Erro ao processar pedido')
+        return
       }
-      message += `   Valor: R$ ${(item.price * item.quantity).toFixed(2)}\n\n`
-    })
 
-    message += `💰 *TOTAL: R$ ${cart.total.toFixed(2)}*\n\n`
+      // Build WhatsApp message
+      let message = `🛒 *NOVO PEDIDO - Sacolão do Seu Pedro*\n\n`
+      message += `🆔 *Pedido #${checkoutResult.order.id.slice(0, 8)}*\n`
+      message += `👤 *Cliente:* ${customerName}\n`
+      message += `📱 *Telefone:* ${customerPhone}\n`
+      message += `💳 *Pagamento:* ${paymentMethod}\n\n`
+      message += `📦 *ITENS DO PEDIDO:*\n\n`
 
-    if (notes.trim()) {
-      message += `📝 *Observações:*\n${notes}\n\n`
+      cart.items.forEach((item, index) => {
+        message += `${index + 1}. *${item.name}*\n`
+        if (item.type === 'product') {
+          message += `   Quantidade: ${item.quantity} ${item.unit}\n`
+        } else {
+          message += `   Quantidade: ${item.quantity}x\n`
+        }
+        message += `   Valor: R$ ${(item.price * item.quantity).toFixed(2)}\n\n`
+      })
+
+      message += `💰 *TOTAL: R$ ${cart.total.toFixed(2)}*\n\n`
+
+      if (notes.trim()) {
+        message += `📝 *Observações:*\n${notes}\n\n`
+      }
+
+      message += `_Pedido enviado via site e salvo no sistema_`
+
+      // Encode message for URL
+      const encodedMessage = encodeURIComponent(message)
+      const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5561999999999'
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
+
+      // Open WhatsApp
+      window.open(whatsappUrl, '_blank')
+
+      // Clear cart after checkout
+      toast.success('Pedido salvo e enviado! Aguarde o contato do Seu Pedro.')
+      clearCart()
+    } catch (error) {
+      console.error('Checkout error:', error)
+      toast.error('Erro ao processar pedido. Tente novamente.')
+    } finally {
+      setIsProcessing(false)
     }
-
-    message += `_Pedido enviado via site_`
-
-    // Encode message for URL
-    const encodedMessage = encodeURIComponent(message)
-    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5561999999999'
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
-
-    // Open WhatsApp
-    window.open(whatsappUrl, '_blank')
-
-    // Clear cart after checkout
-    toast.success('Pedido enviado! Aguarde o contato do Seu Pedro.')
-    clearCart()
   }
 
   if (cart.items.length === 0) {
@@ -105,7 +132,7 @@ export default function CarrinhoPage() {
             <Card key={item.id}>
               <CardContent className="p-4">
                 <div className="flex gap-4">
-                  <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md bg-muted">
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md bg-muted">
                     {item.image_url ? (
                       <Image
                         src={item.image_url}
@@ -254,8 +281,13 @@ export default function CarrinhoPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleCheckout} className="w-full" size="lg">
-                Finalizar no WhatsApp
+              <Button 
+                onClick={handleCheckout} 
+                className="w-full" 
+                size="lg"
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Processando...' : 'Finalizar no WhatsApp'}
               </Button>
             </CardFooter>
           </Card>
