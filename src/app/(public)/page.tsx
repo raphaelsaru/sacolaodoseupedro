@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { ProductCard } from '@/components/product-card'
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search } from 'lucide-react'
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [categories, setCategories] = useState<any[]>([])
@@ -152,5 +152,25 @@ export default function HomePage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Nossos Produtos</h1>
+          <p className="text-muted-foreground">
+            Confira nossos produtos frescos e de qualidade
+          </p>
+        </div>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground text-lg">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <HomePageContent />
+    </Suspense>
   )
 }

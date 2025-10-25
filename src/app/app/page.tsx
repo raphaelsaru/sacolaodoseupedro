@@ -197,7 +197,7 @@ export default async function DashboardPage() {
                       <TableCell>
                         <div>
                           <p className="font-medium">
-                            {order.customer?.full_name || 'Cliente'}
+                            {(order.customer as any)?.full_name || 'Cliente'}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(order.placed_at).toLocaleDateString('pt-BR')}

@@ -92,10 +92,10 @@ export default async function PedidosPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium">
-                          {order.customer?.full_name || 'Cliente'}
+                          {(order.customer as any)?.full_name || 'Cliente'}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {order.customer?.phone || '-'}
+                          {(order.customer as any)?.phone || '-'}
                         </p>
                       </div>
                     </TableCell>
