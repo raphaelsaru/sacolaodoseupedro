@@ -148,3 +148,104 @@ export async function deleteProduct(id: string) {
   return { success: true }
 }
 
+/**
+ * Decrementa o estoque de um produto e registra a movimentação
+ */
+export async function decrementProductStock(
+  productId: string, 
+  quantity: number, 
+  note?: string
+) {
+  const supabase = await createClient()
+
+  // Busca o produto atual
+  const { data: product, error: fetchError } = await supabase
+    .from('products')
+    .select('quantity')
+    .eq('id', productId)
+    .single()
+
+  if (fetchError) {
+    return { error: fetchError.message }
+  }
+
+  // Verifica se há estoque suficiente
+  if (product.quantity < quantity) {
+    return { error: `Estoque insuficiente. Disponível: ${product.quantity}, Solicitado: ${quantity}` }
+  }
+
+  // Atualiza o estoque
+  const { error: updateError } = await supabase
+    .from('products')
+    .update({ quantity: product.quantity - quantity })
+    .eq('id', productId)
+
+  if (updateError) {
+    return { error: updateError.message }
+  }
+
+  // Registra a movimentação
+  const { error: moveError } = await supabase
+    .from('inventory_moves')
+    .insert({
+      product_id: productId,
+      type: 'out',
+      qty: quantity,
+      note: note || null,
+    })
+
+  if (moveError) {
+    return { error: moveError.message }
+  }
+
+  return { success: true }
+}
+
+/**
+ * Incrementa o estoque de um produto e registra a movimentação
+ */
+export async function incrementProductStock(
+  productId: string, 
+  quantity: number, 
+  note?: string
+) {
+  const supabase = await createClient()
+
+  // Busca o produto atual
+  const { data: product, error: fetchError } = await supabase
+    .from('products')
+    .select('quantity')
+    .eq('id', productId)
+    .single()
+
+  if (fetchError) {
+    return { error: fetchError.message }
+  }
+
+  // Atualiza o estoque
+  const { error: updateError } = await supabase
+    .from('products')
+    .update({ quantity: product.quantity + quantity })
+    .eq('id', productId)
+
+  if (updateError) {
+    return { error: updateError.message }
+  }
+
+  // Registra a movimentação
+  const { error: moveError } = await supabase
+    .from('inventory_moves')
+    .insert({
+      product_id: productId,
+      type: 'in',
+      qty: quantity,
+      note: note || null,
+    })
+
+  if (moveError) {
+    return { error: moveError.message }
+  }
+
+  return { success: true }
+}
+

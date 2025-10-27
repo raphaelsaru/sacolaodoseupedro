@@ -1,0 +1,66 @@
+name,category_id,unit_id,price,cost,quantity,sku,image_url,is_active
+Banana Nanica,Frutas,kg,6.99,4.50,50.00,BAN001,https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop,true
+Maçã Argentina,Frutas,kg,9.99,6.50,30.00,MAC001,https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=400&fit=crop,true
+Laranja Pera,Frutas,kg,5.49,3.50,40.00,LAR001,https://images.unsplash.com/photo-1557800634-7bf3c73bf393?w=400&h=400&fit=crop,true
+Mamão Papaya,Frutas,kg,7.99,5.00,25.00,MAM001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Melancia,Frutas,kg,3.99,2.50,15.00,MEL001,https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=400&h=400&fit=crop,true
+Abacaxi,Frutas,un,6.50,4.00,20.00,ABA001,https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=400&h=400&fit=crop,true
+Manga Tommy,Frutas,kg,8.99,5.50,35.00,MAN001,https://images.unsplash.com/photo-1605027990121-4754726cf54d?w=400&h=400&fit=crop,true
+Uva Itália,Frutas,kg,12.99,8.00,20.00,UVA001,https://images.unsplash.com/photo-1537640538966-79f369143b8f?w=400&h=400&fit=crop,true
+Morango,Frutas,kg,15.99,10.00,15.00,MOR001,https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=400&fit=crop,true
+Limão Taiti,Frutas,kg,4.99,3.00,30.00,LIM001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Pera,Frutas,kg,8.49,5.50,25.00,PER001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Kiwi,Frutas,kg,18.99,12.00,20.00,KIW001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Alface Americana,Verduras,maço,3.99,2.50,50.00,ALF001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Alface Crespa,Verduras,maço,3.49,2.20,45.00,ALF002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Rúcula,Verduras,maço,4.99,3.20,30.00,RUC001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Couve,Verduras,maço,2.99,1.80,40.00,COU001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Espinafre,Verduras,maço,4.49,2.80,35.00,ESP001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Agrião,Verduras,maço,3.99,2.50,25.00,AGR001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Salsinha,Verduras,maço,2.49,1.50,30.00,SAL001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Cebolinha,Verduras,maço,2.49,1.50,30.00,CEB001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Coentro,Verduras,maço,2.99,1.80,25.00,COI001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Tomate,Legumes,kg,8.99,5.50,40.00,TOM001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Cenoura,Legumes,kg,5.49,3.50,35.00,CEN001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Batata Inglesa,Legumes,kg,6.99,4.20,50.00,BAT001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Cebola,Legumes,kg,5.99,3.80,45.00,CEB002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Abobrinha,Legumes,kg,7.49,4.50,30.00,ABO001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Berinjela,Legumes,kg,8.49,5.20,25.00,BER001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Pimentão Verde,Legumes,kg,9.99,6.00,20.00,PIM001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Pimentão Vermelho,Legumes,kg,11.99,7.50,20.00,PIM002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Batata Doce,Legumes,kg,6.49,4.00,30.00,BAT002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Mandioca,Legumes,kg,5.99,3.50,25.00,MAN002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Chuchu,Legumes,kg,4.99,3.00,20.00,CHU001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Beterraba,Legumes,kg,6.99,4.20,25.00,BET001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Feijão Carioca,Grãos,kg,8.99,5.50,100.00,FEI001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Feijão Preto,Grãos,kg,9.49,6.00,80.00,FEI002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Arroz Branco,Grãos,kg,6.99,4.20,150.00,ARR001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Lentilha,Grãos,kg,12.99,8.00,50.00,LEN001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Grão de Bico,Grãos,kg,11.99,7.50,40.00,GRA001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Ovos Brancos,Ovos,bandeja,24.90,15.00,20.00,OVO001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Ovos Vermelhos,Ovos,bandeja,26.90,16.50,20.00,OVO002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Leite Integral,Laticínios,l,4.99,3.20,60.00,LEI001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Leite Desnatado,Laticínios,l,5.49,3.50,40.00,LEI002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Queijo Minas,Laticínios,kg,28.99,18.00,15.00,QUE001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Requeijão,Laticínios,un,8.99,5.50,25.00,REQ001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Iogurte Natural,Laticínios,un,3.99,2.50,50.00,IOG001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Manteiga,Laticínios,un,6.99,4.20,30.00,MAN003,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Pão de Açúcar,Pães,un,4.99,3.00,40.00,PAO001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Pão Francês,Pães,un,0.89,0.50,100.00,PAO002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Pão Integral,Pães,un,5.99,3.50,30.00,PAO003,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Biscoito Cream Cracker,Pães,un,3.99,2.50,50.00,BIS001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Bolacha Recheada,Pães,un,4.99,3.20,40.00,BOL001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Açúcar Cristal,Açúcar e Doces,kg,4.99,3.20,80.00,ACU001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Açúcar Refinado,Açúcar e Doces,kg,5.49,3.50,60.00,ACU002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Café Torrado,Café e Chás,kg,18.99,12.00,25.00,CAF001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Café Solúvel,Café e Chás,un,12.99,8.00,30.00,CAF002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Chá de Camomila,Café e Chás,un,3.99,2.50,40.00,CHA001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Óleo de Soja,Óleos e Gorduras,l,6.99,4.20,50.00,OLE001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Azeite de Oliva,Óleos e Gorduras,l,18.99,12.00,20.00,AZE001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Vinagre Branco,Temperos,l,3.99,2.50,30.00,VIN001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Sal Refinado,Temperos,kg,2.99,1.80,40.00,SAL002,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Pimenta do Reino,Temperos,un,4.99,3.20,25.00,PIM003,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Alho,Temperos,kg,12.99,8.00,20.00,ALH001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+Gengibre,Temperos,kg,15.99,10.00,15.00,GEN001,https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop,true
+
+

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { updateOrderStatus } from '@/lib/actions/orders'
 
 interface OrderStatusSelectProps {
   orderId: string
@@ -26,13 +26,11 @@ export function OrderStatusSelect({ orderId, currentStatus }: OrderStatusSelectP
   const handleStatusChange = async (newStatus: string) => {
     setLoading(true)
     try {
-      const supabase = createClient()
-      const { error } = await supabase
-        .from('orders')
-        .update({ status: newStatus })
-        .eq('id', orderId)
+      const result = await updateOrderStatus(orderId, newStatus as any)
 
-      if (error) throw error
+      if (result.error) {
+        throw new Error(result.error)
+      }
 
       setStatus(newStatus)
       toast.success('Status atualizado com sucesso!')
