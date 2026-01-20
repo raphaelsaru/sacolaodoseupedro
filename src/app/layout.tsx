@@ -1,22 +1,44 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Bricolage_Grotesque, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/contexts/cart-context";
 import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Premium body font - clean, modern, excellent readability
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Display font - distinctive, characterful for headings
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-display",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+// Monospace font - for prices and technical elements
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "Sacolão do Seu Pedro",
-  description: "Seu sacolão online de confiança",
+  title: "Sacolao do Seu Pedro | Frutas, Verduras e Legumes Frescos",
+  description: "O melhor sacolao online de Brasilia. Frutas, verduras e legumes frescos entregues na sua casa. Qualidade garantida pelo Seu Pedro.",
+  keywords: ["sacolao", "frutas", "verduras", "legumes", "delivery", "brasilia", "hortifruti"],
+  authors: [{ name: "Sacolao do Seu Pedro" }],
+  openGraph: {
+    title: "Sacolao do Seu Pedro",
+    description: "Frutas, verduras e legumes frescos entregues na sua casa",
+    type: "website",
+    locale: "pt_BR",
+  },
 };
 
 export default function RootLayout({
@@ -25,13 +47,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${plusJakarta.variable} ${bricolage.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         <CartProvider>
           {children}
-          <Toaster />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                borderRadius: '12px',
+                padding: '16px',
+              },
+            }}
+          />
         </CartProvider>
       </body>
     </html>

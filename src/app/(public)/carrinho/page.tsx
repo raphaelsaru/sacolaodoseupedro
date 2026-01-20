@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
+import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, MessageCircle, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -41,7 +41,6 @@ export default function CarrinhoPage() {
     setIsProcessing(true)
 
     try {
-      // Process checkout and save to database
       const checkoutResult = await processCheckout({
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
@@ -56,7 +55,6 @@ export default function CarrinhoPage() {
         return
       }
 
-      // Build WhatsApp message (using text instead of emojis to avoid encoding issues)
       let message = `*NOVO PEDIDO - Sacolao do Seu Pedro*\n\n`
       message += `*Pedido #${checkoutResult.order.id.slice(0, 8)}*\n`
       message += `*Cliente:* ${customerName}\n`
@@ -82,15 +80,12 @@ export default function CarrinhoPage() {
 
       message += `_Pedido enviado via site e salvo no sistema_`
 
-      // Encode message for URL
       const encodedMessage = encodeURIComponent(message)
       const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5561999999999'
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
 
-      // Open WhatsApp
       window.open(whatsappUrl, '_blank')
 
-      // Clear cart after checkout
       toast.success('Pedido salvo e enviado! Aguarde o contato do Seu Pedro.')
       clearCart()
     } catch (error) {
@@ -101,38 +96,61 @@ export default function CarrinhoPage() {
     }
   }
 
+  // Empty cart state
   if (cart.items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <ShoppingBag className="h-24 w-24 text-muted-foreground mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Seu carrinho está vazio</h2>
-        <p className="text-muted-foreground mb-6">
-          Adicione produtos ao carrinho para continuar
+      <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
+        <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-6">
+          <ShoppingBag className="w-12 h-12 text-muted-foreground/50" />
+        </div>
+        <h2 className="text-2xl font-display font-bold text-foreground mb-2">
+          Seu carrinho esta vazio
+        </h2>
+        <p className="text-muted-foreground text-center max-w-md mb-8">
+          Adicione produtos ao carrinho para fazer seu pedido. Temos frutas, verduras e legumes frescos esperando por voce!
         </p>
         <Link href="/">
-          <Button size="lg">Ver Produtos</Button>
+          <Button size="lg" className="rounded-xl px-8 h-12">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Ver Produtos
+          </Button>
         </Link>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Carrinho</h1>
-        <p className="text-muted-foreground">
-          Revise seu pedido e finalize via WhatsApp
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div className="animate-fade-up">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Continuar comprando
+        </Link>
+        <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground">
+          Seu Carrinho
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          {cart.items.length} {cart.items.length === 1 ? 'item' : 'itens'} no carrinho
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-8 lg:grid-cols-3">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
-          {cart.items.map((item) => (
-            <Card key={item.id}>
-              <CardContent className="p-4">
+          {cart.items.map((item, index) => (
+            <Card
+              key={item.id}
+              className="overflow-hidden animate-fade-up"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex gap-4">
-                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md bg-muted">
+                  {/* Image */}
+                  <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
                     {item.image_url ? (
                       <Image
                         src={item.image_url}
@@ -141,24 +159,28 @@ export default function CarrinhoPage() {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-3xl">
-                        {item.type === 'basket' ? '🧺' : '🥬'}
+                      <div className="flex h-full items-center justify-center">
+                        <Package className="w-8 h-8 text-muted-foreground/30" />
                       </div>
                     )}
                   </div>
 
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      R$ {item.price.toFixed(2)}
+                  {/* Details */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-base sm:text-lg line-clamp-1">
+                      {item.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      R$ {item.price.toFixed(2).replace('.', ',')}
                       {item.type === 'product' && item.unit ? ` / ${item.unit}` : ''}
                     </p>
 
+                    {/* Quantity Controls */}
                     <div className="mt-3 flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 rounded-lg shrink-0"
                         onClick={() =>
                           updateQuantity(
                             item.id,
@@ -166,16 +188,22 @@ export default function CarrinhoPage() {
                           )
                         }
                       >
-                        <Minus className="h-3 w-3" />
+                        <Minus className="h-3.5 w-3.5" />
                       </Button>
-                      <span className="min-w-[60px] text-center font-medium">
-                        {item.type === 'product' && item.unit ? item.quantity.toFixed(2) : item.quantity}
-                        {item.type === 'product' && item.unit ? ` ${item.unit}` : 'x'}
-                      </span>
+                      <div className="min-w-[70px] text-center">
+                        <span className="text-sm font-semibold">
+                          {item.type === 'product' && item.unit
+                            ? item.quantity.toFixed(2).replace('.', ',')
+                            : item.quantity}
+                        </span>
+                        <span className="text-xs text-muted-foreground ml-1">
+                          {item.type === 'product' && item.unit ? item.unit : 'un'}
+                        </span>
+                      </div>
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 rounded-lg shrink-0"
                         onClick={() =>
                           updateQuantity(
                             item.id,
@@ -183,15 +211,17 @@ export default function CarrinhoPage() {
                           )
                         }
                       >
-                        <Plus className="h-3 w-3" />
+                        <Plus className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end justify-between">
+                  {/* Price & Remove */}
+                  <div className="flex flex-col items-end justify-between shrink-0">
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                       onClick={() => {
                         removeItem(item.id)
                         toast.info(`${item.name} removido do carrinho`)
@@ -199,8 +229,8 @@ export default function CarrinhoPage() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                    <p className="text-lg font-bold">
-                      R$ {(item.price * item.quantity).toFixed(2)}
+                    <p className="text-lg font-bold text-primary">
+                      R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}
                     </p>
                   </div>
                 </div>
@@ -209,91 +239,129 @@ export default function CarrinhoPage() {
           ))}
         </div>
 
-        {/* Checkout Form */}
-        <div className="space-y-4">
+        {/* Checkout Sidebar */}
+        <div className="space-y-4 animate-fade-up delay-200">
+          {/* Customer Form */}
           <Card>
-            <CardHeader>
-              <h2 className="text-xl font-bold">Finalizar Pedido</h2>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-display">Seus Dados</CardTitle>
+              <CardDescription>Informe seus dados para finalizar o pedido</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nome completo *</Label>
+                <Label htmlFor="name" className="text-sm font-medium">
+                  Nome completo *
+                </Label>
                 <Input
                   id="name"
-                  placeholder="Seu nome"
+                  placeholder="Digite seu nome"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
+                  className="h-11 rounded-xl"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefone *</Label>
+                <Label htmlFor="phone" className="text-sm font-medium">
+                  Telefone (WhatsApp) *
+                </Label>
                 <Input
                   id="phone"
-                  placeholder="(00) 00000-0000"
+                  placeholder="(61) 99999-9999"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="h-11 rounded-xl"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="payment">Forma de pagamento *</Label>
+                <Label htmlFor="payment" className="text-sm font-medium">
+                  Forma de pagamento *
+                </Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <SelectTrigger id="payment">
-                    <SelectValue placeholder="Selecione" />
+                  <SelectTrigger id="payment" className="h-11 rounded-xl">
+                    <SelectValue placeholder="Selecione uma opcao" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Pix">Pix</SelectItem>
                     <SelectItem value="Dinheiro">Dinheiro</SelectItem>
-                    <SelectItem value="Cartão">
-                      Cartão
-                    </SelectItem>
+                    <SelectItem value="Cartao">Cartao (Debito/Credito)</SelectItem>
                     <SelectItem value="Outro">Outro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes">Observações</Label>
+                <Label htmlFor="notes" className="text-sm font-medium">
+                  Observacoes
+                </Label>
                 <Textarea
                   id="notes"
-                  placeholder="Alguma observação sobre o pedido?"
+                  placeholder="Alguma observacao sobre o pedido? (opcional)"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
+                  className="rounded-xl resize-none"
                 />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <h3 className="font-semibold">Resumo do Pedido</h3>
+          {/* Order Summary */}
+          <Card className="bg-primary/5 border-primary/20">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-display">Resumo do Pedido</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Subtotal</span>
-                <span>R$ {cart.total.toFixed(2)}</span>
+            <CardContent className="space-y-4">
+              {/* Items summary */}
+              <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin">
+                {cart.items.map((item) => (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground truncate max-w-[60%]">
+                      {item.name}
+                    </span>
+                    <span className="font-medium shrink-0">
+                      R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                <span>Total</span>
-                <span className="text-green-600">R$ {cart.total.toFixed(2)}</span>
+
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-base font-medium">Total</span>
+                  <span className="text-2xl font-bold text-primary">
+                    R$ {cart.total.toFixed(2).replace('.', ',')}
+                  </span>
+                </div>
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                onClick={handleCheckout} 
-                className="w-full" 
+
+              <Button
+                onClick={handleCheckout}
+                className="w-full h-12 rounded-xl text-base font-semibold btn-press"
                 size="lg"
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Processando...' : 'Finalizar no WhatsApp'}
+                {isProcessing ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin mr-2" />
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Finalizar no WhatsApp
+                  </>
+                )}
               </Button>
-            </CardFooter>
+
+              <p className="text-xs text-center text-muted-foreground">
+                Ao finalizar, voce sera redirecionado para o WhatsApp
+              </p>
+            </CardContent>
           </Card>
         </div>
       </div>
     </div>
   )
 }
-
