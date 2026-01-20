@@ -29,11 +29,20 @@ export type ProcessCheckoutResult =
 
 export async function processCheckout(checkoutData: CheckoutData): Promise<ProcessCheckoutResult> {
   try {
+    console.log('[Checkout] Starting checkout process...', {
+      customerName: checkoutData.customerName,
+      customerPhone: checkoutData.customerPhone,
+      paymentMethod: checkoutData.paymentMethod,
+      itemsCount: checkoutData.cartItems.length,
+      total: checkoutData.cartTotal,
+    })
+
     // Find or create customer
     const customerResult = await findOrCreateCustomer({
       full_name: checkoutData.customerName,
       phone: checkoutData.customerPhone,
     })
+    console.log('[Checkout] Customer result:', customerResult)
 
     if (!customerResult.success) {
       return { success: false, error: customerResult.error ?? 'Erro ao obter cliente' }
@@ -43,7 +52,7 @@ export async function processCheckout(checkoutData: CheckoutData): Promise<Proce
     const paymentMethodMap: Record<string, string> = {
       'Pix': 'pix',
       'Dinheiro': 'cash',
-      'Cartão na entrega': 'card_on_delivery',
+      'Cartao': 'card_on_delivery',
       'Outro': 'other',
     }
 
@@ -72,7 +81,9 @@ export async function processCheckout(checkoutData: CheckoutData): Promise<Proce
     }
 
     // Create the order
+    console.log('[Checkout] Creating order with data:', JSON.stringify(orderData, null, 2))
     const orderResult = await createOrder(orderData)
+    console.log('[Checkout] Order result:', orderResult)
 
     if (!orderResult.success) {
       return { success: false, error: orderResult.error ?? 'Erro ao criar pedido' }
@@ -85,6 +96,7 @@ export async function processCheckout(checkoutData: CheckoutData): Promise<Proce
     }
   } catch (error) {
     console.error('Error processing checkout:', error)
-    return { success: false, error: 'Erro interno do servidor' }
+    const errorMessage = error instanceof Error ? error.message : 'Erro interno do servidor'
+    return { success: false, error: errorMessage }
   }
 }

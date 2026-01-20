@@ -124,9 +124,17 @@ export async function findOrCreateCustomer(customerData: {
   phone: string
   email?: string
 }): Promise<FindOrCreateCustomerResult> {
+  console.log('[Customer] Finding or creating customer:', customerData)
+
   // Checkout público (ex.: Finalizar no WhatsApp) é feito por anônimos — RLS bloquearia.
   // Service role bypassa RLS; usar apenas em server (nunca no browser).
-  const supabase = createServiceClient()
+  let supabase
+  try {
+    supabase = createServiceClient()
+  } catch (error) {
+    console.error('[Customer] Error creating service client:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Erro ao conectar com o banco de dados' }
+  }
 
   // First, try to find existing customer by phone
   const { data } = await supabase

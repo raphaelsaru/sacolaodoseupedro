@@ -33,9 +33,17 @@ export interface CreateOrderData {
 }
 
 export async function createOrder(orderData: CreateOrderData) {
+  console.log('[Order] Creating order...')
+
   // Usado pelo checkout público (ex.: Finalizar no WhatsApp) — usuário anônimo.
   // Service role bypassa RLS em orders e order_items.
-  const supabase = createServiceClient()
+  let supabase
+  try {
+    supabase = createServiceClient()
+  } catch (error) {
+    console.error('[Order] Error creating service client:', error)
+    return { error: error instanceof Error ? error.message : 'Erro ao conectar com o banco de dados' }
+  }
 
   // Create the order
   const { data: orderDataResp, error: orderError } = await supabase
