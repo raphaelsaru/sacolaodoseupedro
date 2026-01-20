@@ -57,6 +57,7 @@ Crie um arquivo `.env.local` na raiz do projeto:
 # Supabase (obtenha em: https://supabase.com/dashboard/project/_/settings/api)
 NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima
+SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key   # obrigatório para checkout (Finalizar no WhatsApp)
 SUPABASE_BUCKET_IMAGES=products
 
 # App

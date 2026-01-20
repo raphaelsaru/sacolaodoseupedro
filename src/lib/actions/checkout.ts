@@ -23,7 +23,11 @@ export interface CheckoutData {
   cartTotal: number
 }
 
-export async function processCheckout(checkoutData: CheckoutData) {
+export type ProcessCheckoutResult =
+  | { success: false; error: string }
+  | { success: true; order: { id: string }; customer: { id: string } }
+
+export async function processCheckout(checkoutData: CheckoutData): Promise<ProcessCheckoutResult> {
   try {
     // Find or create customer
     const customerResult = await findOrCreateCustomer({
@@ -32,7 +36,7 @@ export async function processCheckout(checkoutData: CheckoutData) {
     })
 
     if (!customerResult.success) {
-      return { error: customerResult.error }
+      return { success: false, error: customerResult.error ?? 'Erro ao obter cliente' }
     }
 
     // Map payment method to database format
@@ -71,7 +75,7 @@ export async function processCheckout(checkoutData: CheckoutData) {
     const orderResult = await createOrder(orderData)
 
     if (!orderResult.success) {
-      return { error: orderResult.error }
+      return { success: false, error: orderResult.error ?? 'Erro ao criar pedido' }
     }
 
     return { 
@@ -81,6 +85,6 @@ export async function processCheckout(checkoutData: CheckoutData) {
     }
   } catch (error) {
     console.error('Error processing checkout:', error)
-    return { error: 'Erro interno do servidor' }
+    return { success: false, error: 'Erro interno do servidor' }
   }
 }

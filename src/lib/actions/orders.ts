@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { Database } from '@/lib/types/database.types'
 import { decrementProductStock, incrementProductStock } from './products'
 
@@ -33,10 +33,12 @@ export interface CreateOrderData {
 }
 
 export async function createOrder(orderData: CreateOrderData) {
-  const supabase = await createClient()
+  // Usado pelo checkout público (ex.: Finalizar no WhatsApp) — usuário anônimo.
+  // Service role bypassa RLS em orders e order_items.
+  const supabase = createServiceClient()
 
   // Create the order
-  const { data: order, error: orderError } = await supabase
+  const { data: orderDataResp, error: orderError } = await supabase
     .from('orders')
     .insert({
       customer_id: orderData.customer_id || null,
@@ -50,13 +52,15 @@ export async function createOrder(orderData: CreateOrderData) {
       channel: orderData.channel || 'web',
       notes: orderData.notes || null,
       placed_at: new Date().toISOString(),
-    })
+    } as never)
     .select()
     .single()
 
   if (orderError) {
     return { error: orderError.message }
   }
+
+  const order = orderDataResp as { id: string }
 
   // Create order items
   if (orderData.items.length > 0) {
@@ -72,7 +76,7 @@ export async function createOrder(orderData: CreateOrderData) {
 
     const { error: itemsError } = await supabase
       .from('order_items')
-      .insert(orderItems)
+      .insert(orderItems as never)
 
     if (itemsError) {
       return { error: itemsError.message }

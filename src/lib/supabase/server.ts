@@ -1,5 +1,7 @@
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import type { Database } from '@/lib/types/database.types'
 
 export async function createClient() {
   const cookieStore = await cookies()
@@ -26,5 +28,22 @@ export async function createClient() {
       },
     }
   )
+}
+
+/**
+ * Client com Service Role — bypassa RLS.
+ * Usar APENAS em server actions (ex.: checkout público) em que o usuário
+ * não está autenticado. NUNCA expor ou usar no browser.
+ * Exige SUPABASE_SERVICE_ROLE_KEY no .env.
+ */
+export function createServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    throw new Error(
+      'SUPABASE_SERVICE_ROLE_KEY (e NEXT_PUBLIC_SUPABASE_URL) são obrigatórios para o checkout. Configure em .env.local e na Vercel.'
+    )
+  }
+  return createSupabaseClient<Database>(url, key, { auth: { persistSession: false } })
 }
 

@@ -1,7 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/types/database.types'
+
+type CustomerRow = Database['public']['Tables']['customers']['Row']
 
 export async function createCustomer(formData: FormData) {
   const supabase = await createClient()
@@ -112,20 +115,27 @@ export async function deleteAddress(customerId: string, addressId: string) {
   return { success: true }
 }
 
+export type FindOrCreateCustomerResult =
+  | { success: false; error: string }
+  | { success: true; customer: { id: string } }
+
 export async function findOrCreateCustomer(customerData: {
   full_name: string
   phone: string
   email?: string
-}) {
-  const supabase = await createClient()
+}): Promise<FindOrCreateCustomerResult> {
+  // Checkout público (ex.: Finalizar no WhatsApp) é feito por anônimos — RLS bloquearia.
+  // Service role bypassa RLS; usar apenas em server (nunca no browser).
+  const supabase = createServiceClient()
 
   // First, try to find existing customer by phone
-  const { data: existingCustomer } = await supabase
+  const { data } = await supabase
     .from('customers')
     .select('*')
     .eq('phone', customerData.phone)
     .single()
 
+  const existingCustomer = data as CustomerRow | null
   if (existingCustomer) {
     // Update customer info if needed
     if (existingCustomer.full_name !== customerData.full_name || 
@@ -135,31 +145,32 @@ export async function findOrCreateCustomer(customerData: {
         .update({
           full_name: customerData.full_name,
           email: customerData.email || existingCustomer.email,
-        })
+        } as never)
         .eq('id', existingCustomer.id)
 
       if (updateError) {
-        return { error: updateError.message }
+        return { success: false, error: updateError.message }
       }
     }
     return { success: true, customer: existingCustomer }
   }
 
   // Create new customer if not found
-  const { data: newCustomer, error: createError } = await supabase
+  const { data: newData, error: createError } = await supabase
     .from('customers')
     .insert({
       full_name: customerData.full_name,
       phone: customerData.phone,
       email: customerData.email || null,
-    })
+    } as never)
     .select()
     .single()
 
   if (createError) {
-    return { error: createError.message }
+    return { success: false, error: createError.message }
   }
 
+  const newCustomer = newData as CustomerRow
   revalidatePath('/app/clientes')
   return { success: true, customer: newCustomer }
 }
